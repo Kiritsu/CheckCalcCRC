@@ -120,7 +120,7 @@ public class CRCUtilities {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String lastCommand;
         do {
-            System.out.println("=== TP2 Réseau | Allan Mercou | CRC ===");
+            System.out.println("=== TP2 Réseau | Allan Mercou - Léon Souffes | CRC ===");
             System.out.println("> [Q]uit: quitte le programme");
             System.out.println("> [E]ncode: permet d'encoder un message avec le polynome générateur de son choix.");
             System.out.println("> [C]heck: permet de vérifier que le message envoyé ne contient pas d'erreurs.");
