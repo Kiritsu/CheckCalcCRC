@@ -14,7 +14,8 @@ public class CRCUtilities {
     private static CRCModel encodeCRC(StringBuilder binarySentence, StringBuilder polynomialGenerator) {
         StringBuilder crcFinal = new StringBuilder();
         // Ajout du mot et du polynome générateur
-        crcFinal.append(binarySentence).append("0000");
+        crcFinal.append(binarySentence);
+        crcFinal.append("0".repeat(polynomialGenerator.length() - 1));
 
         int offset = 0;
         ArrayList<StringBuilder> steps = new ArrayList<>();
@@ -52,14 +53,12 @@ public class CRCUtilities {
      */
     private static StringBuilder getStepString(StringBuilder binaryString, StringBuilder polynomialGenerator, int offset) {
         StringBuilder step = new StringBuilder();
-        for (int i = 0; i < offset; ++i) step.append(' ');
+        step.append(" ".repeat(Math.max(0, offset)));
         step.append(binaryString).append('\n');
-        for (int i = 0; i < offset; ++i) step.append(' ');
+        step.append(" ".repeat(Math.max(0, offset)));
         step.append(polynomialGenerator).append('\n');
 
-        for (int i = 0; i < binaryString.length() + offset; ++i) {
-            step.append('-');
-        }
+        step.append("-".repeat(Math.max(0, binaryString.length() + offset)));
 
         step.append('\n');
         return step;
