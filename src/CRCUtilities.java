@@ -1,5 +1,9 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+@SuppressWarnings("Duplicates")
 public class CRCUtilities {
     /**
      * Encode a message with the following polynomial generator: x^4 + x^2 + x.
@@ -94,7 +98,7 @@ public class CRCUtilities {
     private static CRCModel encodeMessage(String message, String generator) {
         StringBuilder builder = new StringBuilder();
         for (char c : message.toCharArray()) {
-            builder.append(Integer.toBinaryString(c));
+            builder.append(Integer.toBinaryString(Character.toUpperCase(c)));
         }
 
         return encodeCRC(builder, new StringBuilder(generator));
@@ -104,28 +108,80 @@ public class CRCUtilities {
      * Check whether a given binary message has properly been sent.
      * @param binary Binary message to check.
      */
-    private static boolean checkMessage(String binary, String generator) {
-        CRCModel crc = encodeCRC(new StringBuilder(binary), new StringBuilder(generator));
-        return crc.isValid();
+    private static CRCModel checkMessage(String binary, String generator) {
+        return encodeCRC(new StringBuilder(binary), new StringBuilder(generator));
     }
 
-    public static void main(String... args) {
-        CRCModel model = encodeMessage("ABC", "10110");
-        System.out.println("Envoi du message " + model.getMessage());
+    public static void main(String... args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String lastCommand;
+        do {
+            System.out.println("=== TP2 Réseau | Allan Mercou | CRC ===");
+            System.out.println("> [Q]uit: quitte le programme");
+            System.out.println("> [E]ncode: permet d'encoder un message avec le polynome générateur de son choix.");
+            System.out.println("> [C]heck: permet de vérifier que le message envoyé ne contient pas d'erreurs.");
+            System.out.println("Entrez votre choix.");
 
-        System.out.println();
-        System.out.println();
+            lastCommand = reader.readLine();
+            switch (lastCommand.toLowerCase()) {
+                case "q":
+                case "quit":
+                    break;
+                case "e":
+                case "encode": {
+                    System.out.println("Entrez le message à encoder :");
+                    String message = reader.readLine();
 
-        System.out.println("Etapes : ");
-        for (StringBuilder builder : model.getSteps()) {
-            System.out.print(builder);
-        }
+                    System.out.println("Entrez le polynome générateur à utiliser :");
+                    String polynome = reader.readLine();
 
-        System.out.println();
-        System.out.println();
+                    CRCModel model = encodeMessage(message, polynome);
+                    System.out.println("Message initial : " + model.getMessage());
 
-        System.out.println("CRC trouvé : " + model.getCrc());
-        System.out.println("Message reçu : " + model.getFullMessage());
-        System.out.println("Message reçu est-il valide ? " + checkMessage(model.getFullMessage(), "10110"));
+                    System.out.println();
+                    System.out.println();
+
+                    System.out.println("Etapes : ");
+                    for (StringBuilder builder : model.getSteps()) {
+                        System.out.print(builder);
+                    }
+
+                    System.out.println();
+                    System.out.println();
+
+                    System.out.println("CRC trouvé : " + model.getCrc());
+                    System.out.println("Message à envoyer : " + model.getFullMessage());
+                    break;
+                }
+                case "c":
+                case "check": {
+                    System.out.println("Entrez le message à vérifier :");
+                    String message = reader.readLine();
+
+                    System.out.println("Entrez le polynome générateur à utiliser :");
+                    String polynome = reader.readLine();
+
+                    CRCModel model = checkMessage(message, polynome);
+
+                    System.out.println();
+                    System.out.println();
+
+                    System.out.println("Etapes : ");
+                    for (StringBuilder builder : model.getSteps()) {
+                        System.out.print(builder);
+                    }
+
+                    System.out.println();
+                    System.out.println();
+
+                    System.out.println("Le message reçu est " + (model.isValid() ? "valide" : "invalide") + " !");
+                    break;
+                }
+            }
+
+            System.out.println();
+            System.out.println();
+            System.out.println();
+        } while (!lastCommand.equals("quit") && !lastCommand.equals("q"));
     }
 }
