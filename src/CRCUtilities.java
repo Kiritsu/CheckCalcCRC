@@ -3,17 +3,14 @@ import java.util.ArrayList;
 public class CRCUtilities {
     /**
      * Encode a message with the following polynomial generator: x^4 + x^2 + x.
-     * @param binarySentence Mots à encoder.
+     * @param binarySentence Words to encode.
+     * @param polynomialGenerator Polynomial generator to use.
      * @return Return a model that contains the CRC, the message and the different calculation steps.
      */
-    private static CRCModel encodeCRC(StringBuilder binarySentence) {
+    private static CRCModel encodeCRC(StringBuilder binarySentence, StringBuilder polynomialGenerator) {
         StringBuilder crcFinal = new StringBuilder();
         // Ajout du mot et du polynome générateur
         crcFinal.append(binarySentence).append("0000");
-
-        // Création du polynome générateur
-        StringBuilder polynomialGenerator = new StringBuilder();
-        polynomialGenerator.append("10110");
 
         ArrayList<StringBuilder> steps = new ArrayList<>();
         while (crcFinal.length() > 4) {
@@ -94,26 +91,26 @@ public class CRCUtilities {
      * Encode a message with CRC from the given literal string.
      * @param message Message to encode.
      */
-    private static CRCModel encodeMessage(String message) {
+    private static CRCModel encodeMessage(String message, String generator) {
         StringBuilder builder = new StringBuilder();
         for (char c : message.toCharArray()) {
             builder.append(Integer.toBinaryString(c));
         }
 
-        return encodeCRC(builder);
+        return encodeCRC(builder, new StringBuilder(generator));
     }
 
     /**
      * Check whether a given binary message has properly been sent.
      * @param binary Binary message to check.
      */
-    private static boolean checkMessage(String binary) {
-        CRCModel crc = encodeCRC(new StringBuilder(binary));
+    private static boolean checkMessage(String binary, String generator) {
+        CRCModel crc = encodeCRC(new StringBuilder(binary), new StringBuilder(generator));
         return crc.isValid();
     }
 
     public static void main(String... args) {
-        CRCModel model = encodeMessage("ABC");
+        CRCModel model = encodeMessage("ABC", "10110");
         System.out.println("Envoi du message " + model.getMessage());
 
         System.out.println();
@@ -129,6 +126,6 @@ public class CRCUtilities {
 
         System.out.println("CRC trouvé : " + model.getCrc());
         System.out.println("Message reçu : " + model.getFullMessage());
-        System.out.println("Message reçu est-il valide ? " + checkMessage(model.getFullMessage()));
+        System.out.println("Message reçu est-il valide ? " + checkMessage(model.getFullMessage(), "10110"));
     }
 }
