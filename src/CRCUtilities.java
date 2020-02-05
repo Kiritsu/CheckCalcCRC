@@ -16,9 +16,10 @@ public class CRCUtilities {
         // Ajout du mot et du polynome générateur
         crcFinal.append(binarySentence).append("0000");
 
+        int offset = 0;
         ArrayList<StringBuilder> steps = new ArrayList<>();
         while (crcFinal.length() > 4) {
-            steps.add(getStepString(crcFinal, polynomialGenerator));
+            steps.add(getStepString(crcFinal, polynomialGenerator, offset));
 
             // calcul avec le polynome générateur :
             StringBuilder tempBinaryString = new StringBuilder();
@@ -34,10 +35,12 @@ public class CRCUtilities {
                 tempBinaryString.insert(i, crcFinal.charAt(i));
             }
 
+            int length = crcFinal.length();
             crcFinal = removeLeftZeroes(tempBinaryString);
+            offset += (length - crcFinal.length());
         }
 
-        steps.add(getStepString(crcFinal, polynomialGenerator));
+        steps.add(getStepString(crcFinal, polynomialGenerator, offset));
 
         return new CRCModel(steps, binarySentence, crcFinal);
     }
@@ -47,12 +50,14 @@ public class CRCUtilities {
      * @param binaryString Binary string
      * @param polynomialGenerator Polynomial generator string.
      */
-    private static StringBuilder getStepString(StringBuilder binaryString, StringBuilder polynomialGenerator) {
+    private static StringBuilder getStepString(StringBuilder binaryString, StringBuilder polynomialGenerator, int offset) {
         StringBuilder step = new StringBuilder();
-        step.append(binaryString).append('\n')
-            .append(polynomialGenerator).append('\n');
+        for (int i = 0; i < offset; ++i) step.append(' ');
+        step.append(binaryString).append('\n');
+        for (int i = 0; i < offset; ++i) step.append(' ');
+        step.append(polynomialGenerator).append('\n');
 
-        for (int i = 0; i < binaryString.length(); ++i) {
+        for (int i = 0; i < binaryString.length() + offset; ++i) {
             step.append('-');
         }
 
